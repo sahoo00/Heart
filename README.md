@@ -26,8 +26,7 @@ data/GSE119087_human-gpl570-expr.txt
 We created Boolean Lab Heart Disease Dataset (BoLHD Dataset) and submitted in
 the following repository.
 Download this dataset from public repository[1].
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19722879.svg)](https://doi.or
-g/10.5281/zenodo.19722879)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19722879.svg)](https://doi.org/10.5281/zenodo.19722879)
 
 
 ### BoLHD Analysis
