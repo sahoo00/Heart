@@ -134,20 +134,32 @@ def getMSigDB(gs):
     return wt1, l1
 bone.getMSigDB = getMSigDB
 
+def prepareData(self, dbid, cfile = "data/explore.conf"):
+    self.db = hu.Database(cfile)
+    self.dbid = dbid
+    self.h = hu.Hegemon(self.db.getDataset(self.dbid))
+    self.h.init()
+    self.h.initPlatform()
+    self.h.initSurv()
+    self.num = self.h.getNum()
+    self.start = self.h.getStart()
+    self.end = self.h.getEnd()
+    self.name = self.h.rdataset.getName()
+    self.source = self.h.getSource()
+    self.headers = self.h.headers
+    self.hhash = {}
+    for i in range(len(self.headers)):
+        self.hhash[self.headers[i]] = i
+    return
+bone.IBDAnalysis.prepareData = prepareData
+
 def getSMheart(self, tn=1):
-    self.prepareData("AD55.5")
-    atype = self.h.getSurvName("c Type")
-    atypes = ['WT', 'KO', 'KO+CST', 'W+CST', 'NA']
-    ahash = {'WT':0, 'CST-KO':1, 'CST-KO+CST':2, 'None':4, 'WT+CST':3}
-    if tn == 2:
-        atypes = ['WT', 'KO', 'KO+CST']
-        ahash = {'WT':0, 'CST-KO':1, 'CST-KO+CST':2}
-    if tn == 3:
-        atype = self.h.getSurvName("c Title")
-        atypes = ['WT', 'KO', 'KO+CST']
-        ahash = {'W2_S2':0, 'W3_S3':0, 'W1_S1':0,
-                'C1_S10':1, 'C2_S11':1, 'C3_S12':1, 'C5_S14':1,
-                'CC1_S15':2, 'CC2_S16':2, 'CC4_S18':2, 'CC5_S19':2}
+    self.prepareData("SM1", cfile="data/explore.conf")
+    atype = self.h.getSurvName("c Title")
+    atypes = ['WT', 'KO', 'KO+CST']
+    ahash = {'W2_S2':0, 'W3_S3':0, 'W1_S1':0,
+            'C1_S10':1, 'C2_S11':1, 'C3_S12':1, 'C5_S14':1,
+            'CC1_S15':2, 'CC2_S16':2, 'CC4_S18':2, 'CC5_S19':2}
     self.initData(atype, atypes, ahash)
     return
 bone.IBDAnalysis.getSMheart = getSMheart
@@ -268,4 +280,105 @@ def getGlobal(self, tn=1):
     self.initData(atype, atypes, ahash)
     return
 bone.IBDAnalysis.getGlobal = getGlobal
+
+def getKatoh2025Heart(self, tn=1, ta=0):
+    self.prepareData("CA48")
+    atype = self.h.getSurvName('c Type')
+    atypes = ['CTRL', 'DCM']
+    ahash = {}
+    if (tn == 2): # Select Only males
+        gsmid = self.h.getSurvName('c gsmid')
+        atype = [None if gsmid[k] == 'GSM9102209' else atype[k]
+                for k in range(len(atype))]
+    self.initData(atype, atypes, ahash)
+    return
+bone.IBDAnalysis.getKatoh2025Heart = getKatoh2025Heart
+
+def getRen2020Mm(self, tn=1):
+    self.prepareData("COV108.2")
+    atype = self.h.getSurvName("c src1")
+    atypes = ['N', 'C', 'CM']
+    ahash = {'TAC sham CM':1, 'TAC2W CM':2, 'TAC5W CM':2,
+            'TAC8W CM':2, 'TAC11W CM':2, 'normal heart CM':0}
+    if (tn == 2):
+        atypes = ['C', 'CM']
+        ahash = {'TAC sham CM':0, 'TAC2W CM':1, 'TAC5W CM':1,
+                'TAC8W CM':1, 'TAC11W CM':1, 'normal heart CM':0}
+    self.initData(atype, atypes, ahash)
+    return
+bone.IBDAnalysis.getRen2020Mm = getRen2020Mm
+
+def getGrueter2025heartMm(self, tn=1, ta=0):
+    self.prepareData("CA50")
+    atype = self.h.getSurvName('c Type')
+    atypes = ['C', 'CM']
+    ahash = {'Ventricle, Neg Cre':0, 'Ventricle, Pos Cre':1}
+    self.initData(atype, atypes, ahash)
+    return
+bone.IBDAnalysis.getGrueter2025heartMm = getGrueter2025heartMm
+
+def getPavelec2025heartMm(self, tn=1, ta=0):
+    self.prepareData("CA51")
+    atype = self.h.getSurvName('c Type')
+    atypes = ['SW', 'SK', 'IW', 'IK', 'W', 'K']
+    ahash = {'Cardiomyocyte-Saline-WT':0, 'Cardiomyocyte-Saline-KO':1,
+            'Cardiomyocyte-ISO-WT':2, 'Cardiomyocyte-ISO-KO':3,
+            'WholeHeart-ISO-KO':5, 'WholeHeart-ISO-WT':4}
+    if (tn == 2):
+        atypes = ['C', 'CM']
+        ahash = {'Cardiomyocyte-Saline-WT':1, 'Cardiomyocyte-Saline-KO':0}
+    self.initData(atype, atypes, ahash)
+    return
+bone.IBDAnalysis.getPavelec2025heartMm = getPavelec2025heartMm
+
+def getBakshi2025heartMm(self, tn=1, ta=0):
+    self.prepareData("CA54")
+    atype = self.h.getSurvName('c Type')
+    atypes = ['CSV', 'CTV', 'CTM', 'SSV', 'STV', 'STM']
+    ahash = {'Whole heart tissue,Control-Sham-Vehicle':0,
+            'Whole heart tissue,Control-TAC-Vehicle':1,
+            'Whole heart tissue,Control-TAC-MitoQ':2,
+            'Whole heart tissue,cSirt4-Tg-Sham-Vehicle':3,
+            'Whole heart tissue,cSirt4-Tg-TAC-Vehicle':4,
+            'Whole heart tissue,cSirt4-Tg-TAC-MitoQ':5}
+    if (tn == 2):
+        atypes = ['C', 'CM']
+        ahash = {'Whole heart tissue,Control-Sham-Vehicle':0,
+                'Whole heart tissue,Control-TAC-Vehicle':1}
+    self.initData(atype, atypes, ahash)
+    return
+bone.IBDAnalysis.getBakshi2025heartMm = getBakshi2025heartMm
+
+def getPeng2020htnRt(self, tn=1):
+    self.prepareData("HRT6")
+    atype = self.h.getSurvName("c group")
+    atypes = ['W', 'S', 'S+Q']
+    ahash = {'Hypertension':1, 'QDG Treatment':2, 'Normal':0}
+    if tn == 2:
+        atypes = ['W', 'S']
+        ahash = {'Hypertension':1, 'Normal':0}
+    self.initData(atype, atypes, ahash)
+    return
+bone.IBDAnalysis.getPeng2020htnRt = getPeng2020htnRt
+
+def getKhassafi2023htnRt(self, tn=1, ta=0):
+    self.prepareData("CA40.2")
+    atype = self.h.getSurvName('c condition')
+    atypes = ['N', 'C', 'D', 'E', 'L']
+    ahash = {'Control RV':0, 'control RV':0,
+            'Compensated RV':1, 'Decompensated RV':2,
+            'early decompensated':3, 'late decompensated':4}
+    if tn == 2:
+        atype = self.h.getSurvName('c tissue type')
+        atypes = ['N', 'C', 'D']
+        ahash = {'Control RV':0, 'Compensated RV':1, 'Decompensated RV':2}
+    if tn == 3:
+        atypes = ['N', 'C']
+        ahash = {'Control RV':0, 'control RV':0, 'Compensated RV':1}
+    if tn == 4:
+        atypes = ['N', 'D']
+        ahash = {'Control RV':0, 'control RV':0, 'Decompensated RV':1}
+    self.initData(atype, atypes, ahash)
+    return
+bone.IBDAnalysis.getKhassafi2023htnRt = getKhassafi2023htnRt
 
